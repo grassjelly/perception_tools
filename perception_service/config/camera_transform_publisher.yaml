@@ -1,0 +1,28 @@
+camera_transform_publisher:
+  ros__parameters:
+    dict_id: 'DICT_4X4_50'
+    image_topic: 'camera/color/image_raw'
+    depth_topic: 'camera/aligned_depth_to_color/image_raw'
+    depth_info_topic: 'camera/aligned_depth_to_color/camera_info'
+    base_to_cal_pos: [0.29975, -0.2, 0.0]
+    # base_to_cal_rot: [0.0, 1.5708, 3.1416]
+    base_to_cal_rot: [0.0, 3.1416, -1.5708]
+
+    aruco_marker_id: 1
+    base_frame_id: 'camera_color_optical_frame'
+    camera_frame: 'camera_color_optical_frame'
+
+
+perception_server:
+  ros__parameters:
+    dict_id: 'DICT_4X4_50'
+    image_topic: 'camera/color/image_raw'
+    depth_topic: 'camera/aligned_depth_to_color/image_raw'
+    depth_info_topic: 'camera/aligned_depth_to_color/camera_info'
+    base_to_cal_pos: [0.29975, -0.2, 0.0]
+    # base_to_cal_rot: [0.0, 1.5708, 3.1416]
+    base_to_cal_rot: [0.0, 3.1416, -1.5708]
+
+    aruco_marker_id: 1
+    base_frame_id: 'camera_color_optical_frame'
+    camera_frame: 'camera_color_optical_frame'
