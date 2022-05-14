@@ -15,7 +15,8 @@
 import threading
 import time
 import rclpy
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
+
 from rclpy.node import Node
 from rclpy.action import ActionServer
 from sensor_msgs.msg import Image, CameraInfo
@@ -30,12 +31,15 @@ from perception_service.geom.geometry import transform_point
 
 from perception_interfaces.srv import ObjectPoses
 from perception_service.models.yolov5 import ObjectFinder
+from ament_index_python.packages import get_package_share_directory
+
+
+model_config = get_package_share_directory('perception_service') + '/config/models.yaml'
 
 
 class PerceptionServer(Node):
     def __init__(self):
         super().__init__('perception_server')
-        self._lock = threading.Lock()
         self.declare_parameters(
             namespace='',
             parameters=[
@@ -43,17 +47,13 @@ class PerceptionServer(Node):
                 ('depth_topic', 'camera/aligned_depth_to_color/image_raw'),
                 ('depth_info_topic', 'camera/aligned_depth_to_color/camera_info'),
                 ('base_frame_id', 'camera_link'),
+                ('model_config', model_config)
             ]
-        )
+        ) 
 
         self._object_finder = ObjectFinder(
-            weights='/home/juan/yolov5/runs/train/astro_boy_det2/weights/last.pt',
-            data='/home/juan/yolov5/data/astro_boy.yaml',
-            image_size=[640,640],
-            conf_thres=0.2,
-            iou_thres=0.4
+            self.get_parameter('model_config').value
         )
-
         self._image_topic = self.get_parameter('image_topic').value
         self._depth_topic = self.get_parameter('depth_topic').value
         self._depth_info_topic = self.get_parameter('depth_info_topic').value
@@ -70,11 +70,18 @@ class PerceptionServer(Node):
 
         self._camera_trans_rot = None
 
+        qos_profile = QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE, 
+            durability=QoSDurabilityPolicy.VOLATILE,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=1
+        )
+
         self._depth_info_sub = self.create_subscription(
             CameraInfo,
             self._depth_info_topic,
             self._depth_info_cb,
-            qos_profile_sensor_data
+            qos_profile
         )
         self._depth_info_sub
 
@@ -82,7 +89,7 @@ class PerceptionServer(Node):
             Image,
             self._depth_topic,
             self._depth_cb,
-            qos_profile_sensor_data
+            qos_profile
         )
         self._depth_sub
 
@@ -90,10 +97,10 @@ class PerceptionServer(Node):
             Image,
             self._image_topic,
             self._image_cb,
-            qos_profile_sensor_data
+            qos_profile
         )
         self._image_sub
-
+        
         self._wait_for_data()
         self._wait_for_transform()
 
