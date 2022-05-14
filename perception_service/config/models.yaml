@@ -1,0 +1,8 @@
+yolov5:
+  weights: '' #leave blank to use default weights
+  data: '' #leave blank to use default data config tagged to default weights
+  image_size: [640,480]
+  confidence_threshold: 0.45
+  iou_threshold: 0.45
+  gpu_id: 'CPU' # 0,1... for GPU otherwise 'CPU'
+  
