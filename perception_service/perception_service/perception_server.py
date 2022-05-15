@@ -43,9 +43,9 @@ class PerceptionServer(Node):
         self.declare_parameters(
             namespace='',
             parameters=[
-                ('image_topic', 'camera/color/image_raw'),
-                ('depth_topic', 'camera/aligned_depth_to_color/image_raw'),
-                ('depth_info_topic', 'camera/aligned_depth_to_color/camera_info'),
+                ('image_topic', '/camera/color/image_raw'),
+                ('depth_topic', '/camera/aligned_depth_to_color/image_raw'),
+                ('depth_info_topic', '/camera/aligned_depth_to_color/camera_info'),
                 ('base_frame_id', 'camera_link'),
                 ('model_config', model_config)
             ]
